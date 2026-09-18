@@ -1,0 +1,129 @@
+```mermaid
+erDiagram
+
+    FORNECEDOR ||--o{ COMPRA : "realiza"
+    COMPRA ||--|{ ITEM_COMPRA : "possui"
+    PRODUTO ||--o{ ITEM_COMPRA : "é comprado"
+    PRODUTO ||--|| ESTOQUE : "possui saldo"
+    PRODUTO ||--o{ MOVIMENTACAO_ESTOQUE : "movimenta"
+
+    CLIENTE o|--o{ VENDA : "realiza"
+    CANAL_VENDA ||--o{ VENDA : "origina"
+    EVENTO o|--o{ VENDA : "ocorre em"
+
+    VENDA ||--|{ ITEM_VENDA : "possui"
+    PRODUTO ||--o{ ITEM_VENDA : "é vendido"
+
+    FORNECEDOR o|--o{ CONTA_PAGAR : "recebe"
+    COMPRA o|--o| CONTA_PAGAR : "gera"
+
+    VENDA_SITE o|--o{ VENDA : ""
+
+    PRODUTO {
+        int id_produto PK
+        varchar nome
+        varchar categoria
+        varchar tamanho
+        varchar cor
+        decimal preco_venda
+        boolean ativo
+    }
+
+    ESTOQUE {
+        int id_estoque PK
+        int id_produto FK
+        int quantidade_atual
+        int estoque_minimo
+        datetime data_atualizacao
+    }
+
+    MOVIMENTACAO_ESTOQUE {
+        int id_movimentacao PK
+        int id_produto FK
+        varchar tipo_movimentacao
+        int quantidade
+        datetime data_movimentacao
+        varchar motivo
+    }
+
+    FORNECEDOR {
+        int id_fornecedor PK
+        varchar razao_social
+        char cnpj UK
+        varchar telefone
+        varchar email
+    }
+
+    COMPRA {
+        int id_compra PK
+        int id_fornecedor FK
+        date data_compra
+        decimal valor_total
+        varchar status
+    }
+
+    ITEM_COMPRA {
+        int id_compra PK, FK
+        int id_produto PK, FK
+        int quantidade
+        decimal custo_unitario
+    }
+
+    CLIENTE {
+        int id_cliente PK
+        varchar nome
+        varchar cpf
+        varchar email
+        varchar telefone
+    }
+
+    CANAL_VENDA {
+        int id_canal PK
+        varchar nome_canal
+    }
+
+    VENDA_SITE {
+        int id_site PK
+        date data_compra
+        date data_entrega
+    }
+
+    EVENTO {
+        int id_evento PK
+        varchar nome_evento
+        varchar local_evento
+        date data_inicio
+        date data_fim
+    }
+
+    VENDA {
+        int id_venda PK
+        int id_cliente FK
+        int id_canal FK
+        int id_evento FK
+        datetime data_venda
+        decimal valor_total
+        varchar status_venda
+    }
+
+    ITEM_VENDA {
+        int id_venda PK, FK
+        int id_produto PK, FK
+        int quantidade
+        decimal preco_unitario
+        decimal custo_unitario
+        decimal desconto
+    }
+
+    CONTA_PAGAR {
+        int id_conta_pagar PK
+        int id_fornecedor FK
+        int id_compra FK
+        varchar descricao
+        decimal valor
+        date data_emissao
+        date data_vencimento
+        date data_pagamento
+        varchar status
+    }
+```
