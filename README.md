@@ -1,4 +1,18 @@
-## Contexto do Projeto
+# DER — Sistema de Gestão Comercial
+
+
+## Diagrama Entidade-Relacionamento
+
+<p align="center">
+  <img src="DER/der.png" alt="Diagrama Entidade-Relacionamento do sistema" width="100%">
+</p>
+
+> Modelo de banco de dados desenvolvido para uma empresa do segmento de moda automotiva e streetwear, contemplando processos de compras, vendas, estoque e contas a pagar.
+
+![Status](https://img.shields.io/badge/status-em%20desenvolvimento-yellow )
+![Modelagem](https://img.shields.io/badge/modelagem-DER-blue )
+![Banco de Dados](https://img.shields.io/badge/banco%20de%20dados-relacional-green )
+![Mermaid](https://img.shields.io/badge/diagrama-Mermaid-orange )
 
 Este projeto foi desenvolvido a partir da análise das principais necessidades e dificuldades enfrentadas por uma empresa do segmento de **moda automotiva e streetwear**.
 
