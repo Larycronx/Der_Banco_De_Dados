@@ -1,24 +1,18 @@
-```mermaid
-erDiagram
 
+erDiagram
     FORNECEDOR ||--o{ COMPRA : "realiza"
     COMPRA ||--|{ ITEM_COMPRA : "possui"
     PRODUTO ||--o{ ITEM_COMPRA : "é comprado"
     PRODUTO ||--|| ESTOQUE : "possui saldo"
     PRODUTO ||--o{ MOVIMENTACAO_ESTOQUE : "movimenta"
-
     CLIENTE o|--o{ VENDA : "realiza"
     CANAL_VENDA ||--o{ VENDA : "origina"
     EVENTO o|--o{ VENDA : "ocorre em"
-
     VENDA ||--|{ ITEM_VENDA : "possui"
     PRODUTO ||--o{ ITEM_VENDA : "é vendido"
-
     FORNECEDOR o|--o{ CONTA_PAGAR : "recebe"
     COMPRA o|--o| CONTA_PAGAR : "gera"
-
-    VENDA_SITE o|--o{ VENDA : ""
-
+    VENDA_SITE o|--o{ VENDA : "faz"
     PRODUTO {
         int id_produto PK
         varchar nome
@@ -126,4 +120,3 @@ erDiagram
         date data_pagamento
         varchar status
     }
-```
