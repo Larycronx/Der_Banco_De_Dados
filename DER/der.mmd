@@ -21,6 +21,8 @@ erDiagram
         varchar cor
         decimal preco_venda
         boolean ativo
+       decimal preco_unitario
+        decimal custo_unitario
     }
 
     ESTOQUE {
@@ -43,7 +45,7 @@ erDiagram
     FORNECEDOR {
         int id_fornecedor PK
         varchar razao_social
-        char cnpj UK
+        char cnpj
         varchar telefone
         varchar email
     }
@@ -105,8 +107,6 @@ erDiagram
         int id_venda PK, FK
         int id_produto PK, FK
         int quantidade
-        decimal preco_unitario
-        decimal custo_unitario
         decimal desconto
     }
 
