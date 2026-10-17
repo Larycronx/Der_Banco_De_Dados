@@ -2,145 +2,87 @@
 
 # DER — Sistema de Gestão Comercial
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=20&duration=2800&pause=900&color=36BCF7&center=true&vCenter=true&width=720&lines=Modelo+de+Banco+de+Dados;Moda+Automotiva+%26+Streetwear;Compras+%7C+Vendas+%7C+Estoque+%7C+Financeiro" alt="Animação com a descrição do projeto" /> <p>
-<strong>Modelagem de banco de dados para organizar os processos de uma empresa de moda automotiva e streetwear.</strong>
-</p> <p>
-  <img src="https://img.shields.io/badge/Projeto-Em%20desenvolvimento-orange?style=for-the-badge" alt="Status: em desenvolvimento" />
-  <img src="https://img.shields.io/badge/Modelagem-DER-36BCF7?style=for-the-badge" alt="Modelagem DER" />
-  <img src="https://img.shields.io/badge/Documenta%C3%A7%C3%A3o-GitHub-181717?style=for-the-badge&logo=github" alt="Documentação no GitHub" />
-</p>
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=20&duration=2800&pause=900&color=36BCF7&center=true&vCenter=true&width=720&lines=Modelo+de+Banco+de+Dados;Moda+Automotiva+%26+Streetwear;Compras+%7C+Vendas+%7C+Estoque+%7C+Financeiro" alt="Animação com a descrição do projeto" />
 
-<a href="DER/der.png"><strong>Visualizar o diagrama</strong></a>
-  ·  
-<a href="DER/der.mmd"><strong>Ver código Mermaid</strong></a>
+<strong>Modelo lógico de dados para apoiar a gestão comercial de uma empresa de moda automotiva e streetwear.</strong>
+
+<img src="https://img.shields.io/badge/Projeto-Em%20desenvolvimento-orange?style=for-the-badge" alt="Status: em desenvolvimento" />
+<img src="https://img.shields.io/badge/Modelagem-DER-36BCF7?style=for-the-badge" alt="Modelagem DER" />
+<img src="https://img.shields.io/badge/Documenta%C3%A7%C3%A3o-GitHub-181717?style=for-the-badge&logo=github" alt="Documentação no GitHub" />
+
+[**Visualizar o diagrama**](DER/der.png) · [**Ver código Mermaid**](DER/der.mmd)
 
 </div>
 
 ---
 
-<div align="center">
-
 ## Sobre o projeto
 
-</div>
+O modelo organiza dados dos processos identificados para o ERP: compras e fornecedores, produção, produtos e estoque, vendas presenciais e pelo site, eventos, promoções, equipe e controle de acesso, além dos compromissos financeiros.
 
-Este projeto nasceu da análise das necessidades e dos desafios de uma empresa do segmento de **moda automotiva e streetwear**. A partir de uma entrevista e do levantamento de requisitos, foram identificadas as principais entidades, ocorrências e relações envolvidas nos processos comerciais.
-
-O resultado é um modelo de banco de dados que organiza informações de compras, vendas, produtos, estoque e contas a pagar.
-
-<div align="center">
-
-## Objetivo
-
-</div>
-
-Representar, por meio de um **Diagrama Entidade-Relacionamento (DER )**, a estrutura de dados necessária para apoiar as operações da empresa e mostrar como as informações se relacionam.
-
-### Processos contemplados
-
-<div align="center">
-
-`Fornecedores`   `Compras`   `Produtos`   `Estoque`   `Vendas`
-`Clientes`   `Canais de venda`   `Eventos`   `Contas a pagar`
-
-</div> <div align="center">
+A revisão procura manter coerência entre o escopo documentado e o DER. Foram formalizadas as entidades citadas na devolutiva que ainda não apareciam de forma integrada no modelo: `PEDIDO_PRODUCAO`, `USUARIO`, `PERFIL_ACESSO`, `CUSTO_EVENTO`, `PROMOCAO` e `CONTA_RECEBER`. Para itens de produção e produtos participantes de promoções, foram incluídas entidades associativas para representar os relacionamentos N:N.
 
 ## Diagrama Entidade-Relacionamento
 
-<img src="DER/der.png" alt="Diagrama Entidade-Relacionamento do sistema" width="100%" /> </div> <div align="center">
+<img src="DER/der.png" alt="Diagrama Entidade-Relacionamento do sistema" width="100%" />
+
+O arquivo-fonte do diagrama é [`DER/der.mmd`](DER/der.mmd). A imagem acima é gerada a partir desse arquivo.
 
 ## Entidades do modelo
-
-</div>
 
 | Entidade | Descrição |
 | --- | --- |
 | `FORNECEDOR` | Armazena os dados dos fornecedores. |
-| `COMPRA` | Registra as compras realizadas pela empresa. |
-| `ITEM_COMPRA` | Registra os produtos presentes em cada compra. |
-| `PRODUTO` | Armazena os produtos comercializados. |
-| `ESTOQUE` | Controla a quantidade disponível de cada produto. |
-| `MOVIMENTACAO_ESTOQUE` | Registra entradas, saídas e ajustes no estoque. |
+| `COMPRA` | Registra as compras realizadas. |
+| `ITEM_COMPRA` | Relaciona produtos às compras e registra quantidade e custo unitário. |
+| `PRODUTO` | Armazena os produtos comercializados ou produzidos. |
+| `ESTOQUE` | Controla o saldo atual e o estoque mínimo por produto. |
+| `MOVIMENTACAO_ESTOQUE` | Registra entradas, saídas e ajustes de estoque. |
+| `PEDIDO_PRODUCAO` | Registra fornecedor, prazos, etapa atual e situação de uma ordem de produção. |
+| `ITEM_PEDIDO_PRODUCAO` | Relaciona os produtos e quantidades de cada pedido de produção. |
 | `CLIENTE` | Armazena os dados dos clientes. |
 | `CANAL_VENDA` | Identifica o canal utilizado em cada venda. |
-| `VENDA_SITE` | Registra informações relacionadas às vendas realizadas pelo site. |
-| `EVENTO` | Armazena eventos relacionados às vendas. |
-| `VENDA` | Registra as vendas realizadas. |
-| `ITEM_VENDA` | Registra os produtos presentes em cada venda. |
-| `CONTA_PAGAR` | Controla os pagamentos devidos aos fornecedores. |
+| `VENDA` | Registra as vendas e seus dados comerciais. |
+| `VENDA_SITE` | Armazena dados específicos de entrega de uma venda realizada pelo site. |
+| `ITEM_VENDA` | Relaciona produtos às vendas e registra quantidade e desconto. |
+| `EVENTO` | Armazena os eventos relacionados à operação comercial. |
+| `CUSTO_EVENTO` | Registra custos associados a cada evento. |
+| `PROMOCAO` | Armazena período, tipo e valor de uma promoção. |
+| `ITEM_PROMOCAO` | Relaciona os produtos abrangidos por cada promoção. |
+| `CONTA_PAGAR` | Registra obrigações financeiras, inclusive parcelas associadas a compras. |
+| `CONTA_RECEBER` | Registra valores a receber e seus vencimentos, inclusive parcelas associadas a vendas. |
+| `PERFIL_ACESSO` | Define os perfis de acesso disponíveis no sistema. |
+| `USUARIO` | Armazena os usuários e o perfil de acesso atribuído a cada um. |
 
-<div align="center">
+## Relacionamentos e regras representados
 
-## Como as entidades se relacionam
+- Uma compra possui um ou mais itens; cada item identifica um produto, sua quantidade e seu custo unitário.
+- Uma venda possui um ou mais itens; cada item identifica um produto, a quantidade e o desconto aplicado.
+- Cada produto possui um registro de estoque e pode ter várias movimentações.
+- Uma compra pode gerar nenhuma ou várias contas a pagar. Cada conta a pagar pertence a um fornecedor e pode estar vinculada a uma compra; a conta representa a obrigação, não a compra em si.
+- Uma venda pode gerar nenhuma ou várias contas a receber, permitindo representar parcelamento. Cada conta a receber pertence a uma venda; a venda não é, por si só, uma conta a receber.
+- Um pedido de produção pertence a um fornecedor e contém um ou mais itens de produção. Cada item aponta para um produto e sua quantidade.
+- Um evento pode ter vários custos e pode estar relacionado a várias vendas.
+- Uma promoção pode abranger vários produtos, e um produto pode participar de várias promoções; `ITEM_PROMOCAO` registra essa associação.
+- Cada usuário possui um perfil de acesso; um perfil pode ser atribuído a vários usuários.
 
-</div>
+## Ponto pendente de validação com a empresa
 
-- Um fornecedor pode realizar várias compras.
+O DER representa `VENDA_SITE` como extensão opcional de `VENDA`: cada venda pode ter zero ou um registro de dados do site, e cada registro de `VENDA_SITE` pertence a uma única venda. Por isso, `id_venda` é uma chave estrangeira única nessa entidade. Essa cardinalidade é uma proposta de modelagem, não uma decisão validada com a empresa. É necessário confirmar se o processo real do site corresponde a essa relação antes de considerar o modelo financeiro e de vendas consolidado.
 
-- Uma compra pode possuir vários itens, e cada item corresponde a um produto.
+## Arquivos
 
-- Um cliente pode realizar várias vendas.
-
-- Uma venda pode possuir vários itens, e um produto pode aparecer em várias vendas.
-
-- Cada produto possui controle de estoque e pode ter várias movimentações registradas.
-
-- Um canal de venda pode originar várias vendas.
-
-- Um evento pode estar relacionado a várias vendas.
-
-- Uma compra pode gerar uma ou mais contas a pagar.
-
-<div align="center">
-
-## Fluxos principais
-
-</div>
-
-### Processo de compra
-
-1. O fornecedor é cadastrado.
-
-1. A compra é registrada e recebe seus itens.
-
-1. O estoque é atualizado com os produtos comprados.
-
-1. Uma ou mais contas a pagar podem ser associadas à compra.
-
-### Processo de venda
-
-1. O cliente e o canal de venda são identificados.
-
-1. A venda é registrada com seus itens.
-
-1. O estoque é reduzido.
-
-1. Uma movimentação de saída é registrada.
-
-<div align="center">
-
-## Estrutura dos arquivos
-
-</div>
-
-```
+```text
 .
 ├── DER/
-│   ├── der.mmd    # Código Mermaid do diagrama
-│   └── der.png    # Imagem do diagrama
-└── README.md      # Documentação do projeto
+│   ├── der.mmd    # Código-fonte Mermaid do DER
+│   └── der.png    # Imagem renderizada do DER
+└── README.md      # Documentação do modelo
 ```
-
-<div align="center">
 
 ## Tecnologias e conceitos
 
-`Banco de dados`   `Modelo relacional`   `DER`   `Normalização`
-`Chaves primárias e estrangeiras`   `Mermaid`   `Git`   `GitHub`
-
-## Como visualizar o diagrama
-
-O diagrama está disponível nesta página e também no arquivo [`DER/der.png`](DER/der.png). O código-fonte em Mermaid pode ser encontrado em [`DER/der.mmd`](DER/der.mmd) e aberto no [Mermaid Live Editor](https://mermaid.live/).
+`Modelo lógico` · `DER` · `Normalização` · `Chaves primárias e estrangeiras` · `Mermaid` · `Git` · `GitHub`
 
 ## Status
 
@@ -153,5 +95,4 @@ Desenvolvido por [Larycronx](https://github.com/Larycronx).
 ---
 
 <sub>README do projeto DER — Sistema de Gestão Comercial.</sub>
-
-</div> <!-- A animação do cabeçalho é fornecida pelo readme-typing-svg. --> <!-- Se o serviço externo ficar indisponível, o restante do README continuará funcionando normalmente. -->
+</div>

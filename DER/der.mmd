@@ -1,4 +1,3 @@
-
 erDiagram
     FORNECEDOR ||--o{ COMPRA : "realiza"
     COMPRA ||--|{ ITEM_COMPRA : "possui"
@@ -10,9 +9,18 @@ erDiagram
     EVENTO o|--o{ VENDA : "ocorre em"
     VENDA ||--|{ ITEM_VENDA : "possui"
     PRODUTO ||--o{ ITEM_VENDA : "é vendido"
-    FORNECEDOR o|--o{ CONTA_PAGAR : "recebe"
-    COMPRA o|--o| CONTA_PAGAR : "gera"
-    VENDA_SITE o|--o{ VENDA : "faz"
+    FORNECEDOR ||--o{ CONTA_PAGAR : "recebe"
+    COMPRA o|--o{ CONTA_PAGAR : "pode gerar"
+    VENDA ||--o{ CONTA_RECEBER : "pode gerar"
+    VENDA ||--o| VENDA_SITE : "possui dados do site"
+    EVENTO ||--o{ CUSTO_EVENTO : "possui custos"
+    PROMOCAO ||--o{ ITEM_PROMOCAO : "inclui"
+    PRODUTO ||--o{ ITEM_PROMOCAO : "participa de"
+    FORNECEDOR ||--o{ PEDIDO_PRODUCAO : "atende"
+    PEDIDO_PRODUCAO ||--|{ ITEM_PEDIDO_PRODUCAO : "contém"
+    PRODUTO ||--o{ ITEM_PEDIDO_PRODUCAO : "é produzido"
+    PERFIL_ACESSO ||--o{ USUARIO : "define acesso"
+
     PRODUTO {
         int id_produto PK
         varchar nome
@@ -21,7 +29,7 @@ erDiagram
         varchar cor
         decimal preco_venda
         boolean ativo
-       decimal preco_unitario
+        decimal preco_unitario
         decimal custo_unitario
     }
 
@@ -80,7 +88,7 @@ erDiagram
 
     VENDA_SITE {
         int id_site PK
-        int id_venda FK
+        int id_venda FK, UK
         date data_compra
         date data_entrega
     }
@@ -120,4 +128,69 @@ erDiagram
         date data_vencimento
         date data_pagamento
         varchar status
+    }
+
+    CONTA_RECEBER {
+        int id_conta_receber PK
+        int id_venda FK
+        varchar descricao
+        decimal valor
+        date data_emissao
+        date data_vencimento
+        date data_recebimento
+        varchar status
+    }
+
+    PEDIDO_PRODUCAO {
+        int id_pedido_producao PK
+        int id_fornecedor FK
+        date data_pedido
+        date data_prevista
+        date data_conclusao
+        varchar etapa_atual
+        varchar status
+    }
+
+    ITEM_PEDIDO_PRODUCAO {
+        int id_pedido_producao PK, FK
+        int id_produto PK, FK
+        int quantidade
+    }
+
+    CUSTO_EVENTO {
+        int id_custo_evento PK
+        int id_evento FK
+        varchar descricao
+        decimal valor
+        date data_custo
+    }
+
+    PROMOCAO {
+        int id_promocao PK
+        varchar nome
+        varchar tipo_desconto
+        decimal valor_desconto
+        date data_inicio
+        date data_fim
+        boolean ativa
+    }
+
+    ITEM_PROMOCAO {
+        int id_promocao PK, FK
+        int id_produto PK, FK
+    }
+
+    PERFIL_ACESSO {
+        int id_perfil PK
+        varchar nome
+        varchar descricao
+    }
+
+    USUARIO {
+        int id_usuario PK
+        int id_perfil FK
+        varchar nome
+        varchar email
+        varchar senha_hash
+        boolean ativo
     }
