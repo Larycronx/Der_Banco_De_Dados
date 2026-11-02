@@ -12,7 +12,7 @@ INSERT INTO fornecedor (id_fornecedor, razao_social, cnpj, telefone, email) VALU
     (9001, 'Fornecedor Exemplo A', '00.000.000/0000-00', '(00) 0000-0000', 'contato-a@example.invalid'),
     (9002, 'Fornecedor Exemplo B', '11.111.111/1111-11', '(00) 1111-1111', 'contato-b@example.invalid');
 
--- preco_unitario foi deixado NULL porque o repositório não explica sua diferença
+
 -- em relação a preco_venda e custo_unitario.
 INSERT INTO produto (id_produto, nome, categoria, tamanho, cor, preco_venda, ativo, preco_unitario, custo_unitario) VALUES
     (9011, 'Camiseta Exemplo Street', 'Camiseta', 'M', 'Preta', 89.90, TRUE, NULL, 40.00),
