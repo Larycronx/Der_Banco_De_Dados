@@ -1,120 +1,86 @@
-<div align="center">
-
 # DER — Sistema de Gestão Comercial
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=20&duration=2800&pause=900&color=36BCF7&center=true&vCenter=true&width=720&lines=Modelo+de+Banco+de+Dados;Moda+Automotiva+%26+Streetwear;Compras+%7C+Vendas+%7C+Estoque+%7C+Financeiro" alt="Animação com a descrição do projeto" />
+Modelo lógico de dados para apoiar a gestão comercial de uma empresa de moda automotiva e streetwear. O projeto reúne o diagrama Entidade-Relacionamento (DER), o DDL PostgreSQL, dados fictícios para teste e consultas de validação.
 
-<strong>Modelo lógico de dados para apoiar a gestão comercial de uma empresa de moda automotiva e streetwear.</strong>
+[Diagrama renderizado](model/der.png) · [Fonte Mermaid](model/der.mmd) · [DDL PostgreSQL](sql/schema/der.sql) · [Guia de testes](sql/tests/README.md)
 
-<img src="https://img.shields.io/badge/Projeto-Em%20desenvolvimento-orange?style=for-the-badge" alt="Status: em desenvolvimento" />
-<img src="https://img.shields.io/badge/Modelagem-DER-36BCF7?style=for-the-badge" alt="Modelagem DER" />
-<img src="https://img.shields.io/badge/Documenta%C3%A7%C3%A3o-GitHub-181717?style=for-the-badge&logo=github" alt="Documentação no GitHub" />
-
-[**Visualizar o diagrama**](DER/der.png) · [**Ver código Mermaid**](DER/der.mmd) · [**SQL PostgreSQL**](DER/der.sql) · [**Print da execução**](DER/evidencias/execucao_sql_pgadmin.png)
-
-</div>
-
----
-
-## Sobre o projeto
-
-O modelo organiza dados dos processos identificados para o ERP: compras e fornecedores, produção, produtos e estoque, vendas presenciais e pelo site, eventos, promoções, equipe e controle de acesso, além dos compromissos financeiros.
-
-A revisão procura manter coerência entre o escopo documentado e o DER. Foram formalizadas as entidades citadas na devolutiva que ainda não apareciam de forma integrada no modelo: `PEDIDO_PRODUCAO`, `USUARIO`, `PERFIL_ACESSO`, `CUSTO_EVENTO`, `PROMOCAO` e `CONTA_RECEBER`. Para itens de produção e produtos participantes de promoções, foram incluídas entidades associativas para representar os relacionamentos N:N.
-
-## Diagrama Entidade-Relacionamento
-
-<img src="DER/der.png" alt="Diagrama Entidade-Relacionamento do sistema" width="100%" />
-
-O arquivo-fonte do diagrama é [`DER/der.mmd`](DER/der.mmd). A imagem acima é gerada a partir desse arquivo.
-
-## SQL e evidência de execução
-
-O script [`DER/der.sql`](DER/der.sql) cria as tabelas e os relacionamentos do modelo no PostgreSQL. A captura [`DER/evidencias/execucao_sql_pgadmin.png`](DER/evidencias/execucao_sql_pgadmin.png) registra no pgAdmin a consulta ao catálogo `information_schema.tables` com retorno de 21 tabelas.
-
-## Dados de exemplo
-
-A pasta [`exemplo/`](exemplo/) contém [`dados_exemplo_erp.sql`](exemplo/dados_exemplo_erp.sql), com registros fictícios para as 21 tabelas do modelo. Execute primeiro `DER/der.sql` e depois o arquivo de exemplos, preferencialmente em um banco de teste. Os IDs de demonstração ficam na faixa 9000+; altere-os se já existirem no banco. O script não é idempotente e usa placeholders em campos como CPF, CNPJ e hash de senha.
-
-## Testes SQL
-
-A pasta [`tests/`](tests/) contém asserções automatizadas de integridade, consultas diagnósticas para apoiar a análise de normalização e instruções para executá-las com `psql` em um banco de teste vazio. O executor [`tests/run_tests.sh`](tests/run_tests.sh) carrega o DDL e os dados de exemplo antes de rodar os testes. Essas consultas verificam os exemplos e a estrutura; não certificam automaticamente 1FN, 2FN ou 3FN.
-
-## Entidades do modelo
-
-| Entidade | Descrição |
-| --- | --- |
-| `FORNECEDOR` | Armazena os dados dos fornecedores. |
-| `COMPRA` | Registra as compras realizadas. |
-| `ITEM_COMPRA` | Relaciona produtos às compras e registra quantidade e custo unitário. |
-| `PRODUTO` | Armazena os produtos comercializados ou produzidos. |
-| `ESTOQUE` | Controla o saldo atual e o estoque mínimo por produto. |
-| `MOVIMENTACAO_ESTOQUE` | Registra entradas, saídas e ajustes de estoque. |
-| `PEDIDO_PRODUCAO` | Registra fornecedor, prazos, etapa atual e situação de uma ordem de produção. |
-| `ITEM_PEDIDO_PRODUCAO` | Relaciona os produtos e quantidades de cada pedido de produção. |
-| `CLIENTE` | Armazena os dados dos clientes. |
-| `CANAL_VENDA` | Identifica o canal utilizado em cada venda. |
-| `VENDA` | Registra as vendas e seus dados comerciais. |
-| `VENDA_SITE` | Armazena dados específicos de entrega de uma venda realizada pelo site. |
-| `ITEM_VENDA` | Relaciona produtos às vendas e registra quantidade e desconto. |
-| `EVENTO` | Armazena os eventos relacionados à operação comercial. |
-| `CUSTO_EVENTO` | Registra custos associados a cada evento. |
-| `PROMOCAO` | Armazena período, tipo e valor de uma promoção. |
-| `ITEM_PROMOCAO` | Relaciona os produtos abrangidos por cada promoção. |
-| `CONTA_PAGAR` | Registra obrigações financeiras, inclusive parcelas associadas a compras. |
-| `CONTA_RECEBER` | Registra valores a receber e seus vencimentos, inclusive parcelas associadas a vendas. |
-| `PERFIL_ACESSO` | Define os perfis de acesso disponíveis no sistema. |
-| `USUARIO` | Armazena os usuários e o perfil de acesso atribuído a cada um. |
-
-## Relacionamentos e regras representados
-
-- Uma compra possui um ou mais itens; cada item identifica um produto, sua quantidade e seu custo unitário.
-- Uma venda possui um ou mais itens; cada item identifica um produto, a quantidade e o desconto aplicado.
-- Cada produto possui um registro de estoque e pode ter várias movimentações.
-- Uma compra pode gerar nenhuma ou várias contas a pagar. Cada conta a pagar pertence a um fornecedor e pode estar vinculada a uma compra; a conta representa a obrigação, não a compra em si.
-- Uma venda pode gerar nenhuma ou várias contas a receber, permitindo representar parcelamento. Cada conta a receber pertence a uma venda; a venda não é, por si só, uma conta a receber.
-- Um pedido de produção pertence a um fornecedor e contém um ou mais itens de produção. Cada item aponta para um produto e sua quantidade.
-- Um evento pode ter vários custos e pode estar relacionado a várias vendas.
-- Uma promoção pode abranger vários produtos, e um produto pode participar de várias promoções; `ITEM_PROMOCAO` registra essa associação.
-- Cada usuário possui um perfil de acesso; um perfil pode ser atribuído a vários usuários.
-
-## Ponto pendente de validação com a empresa
-
-O DER representa `VENDA_SITE` como extensão opcional de `VENDA`: cada venda pode ter zero ou um registro de dados do site, e cada registro de `VENDA_SITE` pertence a uma única venda. Por isso, `id_venda` é uma chave estrangeira única nessa entidade. Essa cardinalidade é uma proposta de modelagem, não uma decisão validada com a empresa. É necessário confirmar se o processo real do site corresponde a essa relação antes de considerar o modelo financeiro e de vendas consolidado.
-
-## Arquivos
+## Organização do repositório
 
 ```text
 .
-├── DER/
-│   ├── der.mmd    # Código-fonte Mermaid do DER
-│   ├── der.png    # Imagem renderizada do DER
-│   ├── der.sql    # DDL PostgreSQL correspondente ao DER
-│   └── evidencias/
-│       └── execucao_sql_pgadmin.png  # Captura do pgAdmin mostrando 21 tabelas
-├── exemplo/
-│   └── dados_exemplo_erp.sql  # INSERTs fictícios para demonstração
-├── tests/
-│   ├── README.md               # Como executar os testes
-│   ├── run_tests.sh            # Carrega esquema/dados e roda asserções
-│   ├── test_integridade.sql    # Testes automatizados
-│   └── diagnostico_normalizacao.sql # Consultas diagnósticas
-└── README.md      # Documentação do modelo
+├── README.md
+├── model/
+│   ├── der.mmd                   # Fonte Mermaid do DER
+│   └── der.png                   # Diagrama renderizado
+└── sql/
+    ├── schema/
+    │   └── der.sql               # Criação das tabelas e restrições
+    ├── examples/
+    │   └── dados_exemplo_erp.sql # Registros fictícios para demonstração
+    └── tests/
+        ├── README.md             # Instruções e resultado de execução
+        ├── run_tests.sh          # Carrega os scripts e roda as asserções
+        ├── test_integridade.sql  # Verificações automatizadas
+        └── diagnostico_normalizacao.sql # Consultas diagnósticas
 ```
 
-## Tecnologias e conceitos
+O diretório `model/` contém os artefatos do diagrama. A pasta `sql/schema/` contém a definição do banco; `sql/examples/` guarda os inserts fictícios; e `sql/tests/` reúne os testes, diagnósticos e instruções de execução.
 
-`Modelo lógico` · `DER` · `Normalização` · `Chaves primárias e estrangeiras` · `Mermaid` · `Git` · `GitHub`
+## Executar em PostgreSQL
 
-## Status
+Use um banco de teste vazio. O script de dados não é idempotente e os IDs de exemplo podem conflitar com registros já existentes. Com PostgreSQL e `psql` instalados, execute a partir da raiz do repositório:
 
-**Em desenvolvimento**
+```bash
+DATABASE_URL='postgresql://postgres:SUA_SENHA@localhost:5432/erp_teste' ./sql/tests/run_tests.sh
+```
 
-## Autor
+O executor cria as tabelas, carrega os dados fictícios e executa as verificações de integridade. Para rodar as consultas de normalização depois desse ciclo:
 
-Desenvolvido por [Larycronx](https://github.com/Larycronx).
+```bash
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -P pager=off \
+  -f sql/tests/diagnostico_normalizacao.sql
+```
 
----
+No pgAdmin, selecione um banco de teste vazio e execute, nesta ordem, `sql/schema/der.sql`, `sql/examples/dados_exemplo_erp.sql` e `sql/tests/test_integridade.sql`. O arquivo `sql/tests/diagnostico_normalizacao.sql` pode ser executado depois. Se um comando falhar dentro de uma transação, consulte primeiro a mensagem de erro original; `current transaction is aborted` costuma ser uma consequência. Use `ROLLBACK;` para encerrar a transação abortada antes de continuar.
 
-<sub>README do projeto DER — Sistema de Gestão Comercial.</sub>
-</div>
+## O que a suíte verifica
+
+Os testes automatizados conferem as 21 tabelas, 21 chaves primárias, 21 chaves estrangeiras, duas restrições `UNIQUE`, as quantidades de registros fictícios e alguns totais e saldos demonstrativos. A suíte passou em PostgreSQL 16.15 num banco de teste isolado em 02/11/2026. O resultado e os limites das consultas estão descritos em [`sql/tests/README.md`](sql/tests/README.md).
+
+Esses testes verificam a estrutura e a consistência dos exemplos usados. Eles não certificam automaticamente 1FN, 2FN ou 3FN para todos os dados e regras do ERP. As consultas diagnósticas ajudam a investigar possíveis dependências; seus resultados precisam ser interpretados junto às regras de negócio.
+
+## Escopo do modelo
+
+O DER contém 21 entidades:
+
+| Entidade | Finalidade representada |
+| --- | --- |
+| `FORNECEDOR` | Dados de fornecedores. |
+| `COMPRA` | Compras realizadas. |
+| `ITEM_COMPRA` | Produtos, quantidades e custos de cada compra. |
+| `PRODUTO` | Produtos comercializados ou produzidos. |
+| `ESTOQUE` | Saldo atual e estoque mínimo por produto. |
+| `MOVIMENTACAO_ESTOQUE` | Entradas, saídas e ajustes de estoque. |
+| `PEDIDO_PRODUCAO` | Ordens de produção e seus dados operacionais. |
+| `ITEM_PEDIDO_PRODUCAO` | Produtos e quantidades por ordem de produção. |
+| `CLIENTE` | Dados dos clientes. |
+| `CANAL_VENDA` | Canais utilizados nas vendas. |
+| `VENDA` | Registros de vendas. |
+| `VENDA_SITE` | Dados de entrega de vendas realizadas pelo site. |
+| `ITEM_VENDA` | Produtos, quantidades e descontos por venda. |
+| `EVENTO` | Eventos comerciais. |
+| `CUSTO_EVENTO` | Custos associados a eventos. |
+| `PROMOCAO` | Períodos, tipos e valores de promoções. |
+| `ITEM_PROMOCAO` | Produtos abrangidos por promoções. |
+| `CONTA_PAGAR` | Obrigações financeiras e parcelas associadas a compras. |
+| `CONTA_RECEBER` | Valores a receber e parcelas associadas a vendas. |
+| `PERFIL_ACESSO` | Perfis de acesso. |
+| `USUARIO` | Usuários e seus perfis de acesso. |
+
+O modelo representa compras e vendas por tabelas de itens, associa produtos a promoções, relaciona custos a eventos e permite parcelas a pagar e a receber. `VENDA_SITE` é modelada como extensão opcional de `VENDA`; essa cardinalidade ainda deve ser confirmada com as regras reais da empresa.
+
+As participações mínimas — por exemplo, uma compra ter ao menos um item — são representadas no diagrama, mas não são todas garantidas pelas FKs do DDL. Valide também o significado de `preco_unitario` e a regra de cálculo ou armazenamento de `COMPRA.valor_total` antes de tratar o modelo como definitivo.
+
+## Evidências
+
+O repositório contém os scripts necessários para reproduzir os testes. Uma captura antiga do pgAdmin não está incluída na árvore atual; use o executor e os resultados documentados na pasta `sql/tests/` para repetir as verificações num banco de teste.

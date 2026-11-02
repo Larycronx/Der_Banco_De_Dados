@@ -1,5 +1,5 @@
 -- DADOS DE EXEMPLO — ERP de gestão comercial
--- Execute o DER/der.sql primeiro, em um banco de teste.
+-- Execute sql/schema/der.sql primeiro, em um banco de teste.
 -- Todos os registros abaixo são fictícios. CPF/CNPJ, telefone e hash são placeholders;
 -- não são dados válidos.
 -- IDs na faixa 9000+; altere-os se já existirem no seu banco.

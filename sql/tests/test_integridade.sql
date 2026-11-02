@@ -1,7 +1,7 @@
 -- Testes automatizados para o DDL e os registros fictícios do projeto.
--- Pré-requisito: executar DER/der.sql e exemplo/dados_exemplo_erp.sql
+-- Pré-requisito: executar sql/schema/der.sql e sql/examples/dados_exemplo_erp.sql
 -- em um banco de teste vazio.
--- Execute com psql -v ON_ERROR_STOP=1 -f tests/test_integridade.sql.
+-- Execute com psql -v ON_ERROR_STOP=1 -f sql/tests/test_integridade.sql.
 -- Este arquivo valida a estrutura e a consistência dos exemplos; não certifica 1FN/2FN/3FN.
 
 DO $$

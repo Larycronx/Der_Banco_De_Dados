@@ -1,5 +1,5 @@
 -- Consultas diagnósticas para apoiar a revisão de 1FN, 2FN e 3FN.
--- Execute após DER/der.sql e exemplo/dados_exemplo_erp.sql.
+-- Execute após sql/schema/der.sql e sql/examples/dados_exemplo_erp.sql.
 -- Resultados vazios ou sem duplicidades NÃO provam normalização: as regras
 -- funcionais precisam ser confirmadas com o negócio e os dados podem ser poucos.
 
