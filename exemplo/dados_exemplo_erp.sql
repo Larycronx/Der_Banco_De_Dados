@@ -1,8 +1,7 @@
 -- DADOS DE EXEMPLO — ERP de gestão comercial
--- Fonte do esquema: https://github.com/Larycronx/Der_Banco_De_Dados/blob/main/DER/der.sql
 -- Execute o DER/der.sql primeiro, em um banco de teste.
 -- Todos os registros abaixo são fictícios. CPF/CNPJ, telefone e hash são placeholders;
--- não são dados válidos para uso comercial, financeiro ou autenticação real.
+-- não são dados válidos.
 -- IDs na faixa 9000+; altere-os se já existirem no seu banco.
 -- Este arquivo não é idempotente: executá-lo novamente no mesmo banco causará conflito de PK.
 
