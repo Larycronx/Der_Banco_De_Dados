@@ -10,7 +10,7 @@
 <img src="https://img.shields.io/badge/Modelagem-DER-36BCF7?style=for-the-badge" alt="Modelagem DER" />
 <img src="https://img.shields.io/badge/Documenta%C3%A7%C3%A3o-GitHub-181717?style=for-the-badge&logo=github" alt="Documentação no GitHub" />
 
-[**Visualizar o diagrama**](DER/der.png) · [**Ver código Mermaid**](DER/der.mmd)
+[**Visualizar o diagrama**](DER/der.png) · [**Ver código Mermaid**](DER/der.mmd) · [**SQL PostgreSQL**](DER/der.sql) · [**Print da execução**](DER/evidencias/execucao_sql_pgadmin.png)
 
 </div>
 
@@ -27,6 +27,10 @@ A revisão procura manter coerência entre o escopo documentado e o DER. Foram f
 <img src="DER/der.png" alt="Diagrama Entidade-Relacionamento do sistema" width="100%" />
 
 O arquivo-fonte do diagrama é [`DER/der.mmd`](DER/der.mmd). A imagem acima é gerada a partir desse arquivo.
+
+## SQL e evidência de execução
+
+O script [`DER/der.sql`](DER/der.sql) cria as tabelas e os relacionamentos do modelo no PostgreSQL. A captura [`DER/evidencias/execucao_sql_pgadmin.png`](DER/evidencias/execucao_sql_pgadmin.png) registra no pgAdmin a consulta ao catálogo `information_schema.tables` com retorno de 21 tabelas.
 
 ## Entidades do modelo
 
@@ -76,7 +80,10 @@ O DER representa `VENDA_SITE` como extensão opcional de `VENDA`: cada venda pod
 .
 ├── DER/
 │   ├── der.mmd    # Código-fonte Mermaid do DER
-│   └── der.png    # Imagem renderizada do DER
+│   ├── der.png    # Imagem renderizada do DER
+│   ├── der.sql    # DDL PostgreSQL correspondente ao DER
+│   └── evidencias/
+│       └── execucao_sql_pgadmin.png  # Captura do pgAdmin mostrando 21 tabelas
 └── README.md      # Documentação do modelo
 ```
 
