@@ -32,6 +32,10 @@ O arquivo-fonte do diagrama é [`DER/der.mmd`](DER/der.mmd). A imagem acima é g
 
 O script [`DER/der.sql`](DER/der.sql) cria as tabelas e os relacionamentos do modelo no PostgreSQL. A captura [`DER/evidencias/execucao_sql_pgadmin.png`](DER/evidencias/execucao_sql_pgadmin.png) registra no pgAdmin a consulta ao catálogo `information_schema.tables` com retorno de 21 tabelas.
 
+## Dados de exemplo
+
+A pasta [`exemplo/`](exemplo/) contém [`dados_exemplo_erp.sql`](exemplo/dados_exemplo_erp.sql), com registros fictícios para as 21 tabelas do modelo. Execute primeiro `DER/der.sql` e depois o arquivo de exemplos, preferencialmente em um banco de teste. Os IDs de demonstração ficam na faixa 9000+; altere-os se já existirem no banco. O script não é idempotente e usa placeholders em campos como CPF, CNPJ e hash de senha.
+
 ## Entidades do modelo
 
 | Entidade | Descrição |
@@ -84,6 +88,8 @@ O DER representa `VENDA_SITE` como extensão opcional de `VENDA`: cada venda pod
 │   ├── der.sql    # DDL PostgreSQL correspondente ao DER
 │   └── evidencias/
 │       └── execucao_sql_pgadmin.png  # Captura do pgAdmin mostrando 21 tabelas
+├── exemplo/
+│   └── dados_exemplo_erp.sql  # INSERTs fictícios para demonstração
 └── README.md      # Documentação do modelo
 ```
 
