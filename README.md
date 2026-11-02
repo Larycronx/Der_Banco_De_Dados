@@ -36,6 +36,10 @@ O script [`DER/der.sql`](DER/der.sql) cria as tabelas e os relacionamentos do mo
 
 A pasta [`exemplo/`](exemplo/) contém [`dados_exemplo_erp.sql`](exemplo/dados_exemplo_erp.sql), com registros fictícios para as 21 tabelas do modelo. Execute primeiro `DER/der.sql` e depois o arquivo de exemplos, preferencialmente em um banco de teste. Os IDs de demonstração ficam na faixa 9000+; altere-os se já existirem no banco. O script não é idempotente e usa placeholders em campos como CPF, CNPJ e hash de senha.
 
+## Testes SQL
+
+A pasta [`tests/`](tests/) contém asserções automatizadas de integridade, consultas diagnósticas para apoiar a análise de normalização e instruções para executá-las com `psql` em um banco de teste vazio. O executor [`tests/run_tests.sh`](tests/run_tests.sh) carrega o DDL e os dados de exemplo antes de rodar os testes. Essas consultas verificam os exemplos e a estrutura; não certificam automaticamente 1FN, 2FN ou 3FN.
+
 ## Entidades do modelo
 
 | Entidade | Descrição |
@@ -90,6 +94,11 @@ O DER representa `VENDA_SITE` como extensão opcional de `VENDA`: cada venda pod
 │       └── execucao_sql_pgadmin.png  # Captura do pgAdmin mostrando 21 tabelas
 ├── exemplo/
 │   └── dados_exemplo_erp.sql  # INSERTs fictícios para demonstração
+├── tests/
+│   ├── README.md               # Como executar os testes
+│   ├── run_tests.sh            # Carrega esquema/dados e roda asserções
+│   ├── test_integridade.sql    # Testes automatizados
+│   └── diagnostico_normalizacao.sql # Consultas diagnósticas
 └── README.md      # Documentação do modelo
 ```
 
