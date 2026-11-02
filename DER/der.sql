@@ -1,25 +1,3 @@
--- DDL do projeto DER — Sistema de Gestão Comercial
--- Fonte: https://github.com/Larycronx/Der_Banco_De_Dados
--- Dialeto: PostgreSQL
---
--- Mapeamento e limites adotados:
--- 1. Os tipos seguem o DER. Como não foram informados tamanhos para VARCHAR/CHAR
---    nem precisão para DECIMAL, campos textuais usam TEXT e decimais usam NUMERIC.
--- 2. Os atributos não-chave não recebem NOT NULL ou valores padrão sem evidência
---    no modelo. Chaves primárias são NOT NULL por definição.
--- 3. IDs são INTEGER sem geração automática: o DER não especifica sequences,
---    IDENTITY, UUID ou outra estratégia para atribuição de identificadores.
--- 4. FKs obrigatórias ou opcionais seguem as cardinalidades descritas no DER/README.
--- 5. ESTOQUE.id_produto é UNIQUE para refletir PRODUTO 1:1 ESTOQUE no DER.
---    Isso garante no máximo um estoque por produto; a exigência inversa de que
---    todo produto tenha uma linha de estoque exige regra adicional na aplicação.
--- 6. VENDA_SITE.id_venda é UNIQUE conforme observação explícita no README.
--- 7. O vínculo COMPRA -> pelo menos um ITEM_COMPRA e PEDIDO_PRODUCAO -> pelo menos
---    um ITEM_PEDIDO_PRODUCAO não é imposto por uma FK simples; requer validação
---    adicional (por exemplo, na aplicação ou por trigger) se necessário.
--- 8. Não foram adicionados CHECKs para status, faixas ou valores porque tais regras
---    não estão especificadas no repositório. FKs usam o comportamento padrão
---    PostgreSQL (NO ACTION); cascatas não foram presumidas.
 
 BEGIN;
 
