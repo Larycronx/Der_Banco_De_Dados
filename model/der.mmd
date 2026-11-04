@@ -26,7 +26,7 @@ erDiagram
         varchar nome
         categoria_produto_enum categoria
         tamanho_produto_enum tamanho
-        cor_produto_enum cor
+        enum cor
         decimal preco_venda
         boolean ativo
         decimal preco_unitario
@@ -44,7 +44,7 @@ erDiagram
     MOVIMENTACAO_ESTOQUE {
         int id_movimentacao PK
         int id_produto FK
-        tipo_movimentacao_enum tipo_movimentacao
+        enum tipo_movimentacao
         int quantidade
         datetime data_movimentacao
         varchar motivo
@@ -63,7 +63,7 @@ erDiagram
         int id_fornecedor FK
         date data_compra
         decimal valor_total
-        status_compra_enum status
+        enum status_compra
     }
 
     ITEM_COMPRA {
@@ -108,7 +108,7 @@ erDiagram
         int id_evento FK
         datetime data_venda
         decimal valor_total
-        status_venda_enum status_venda
+        enum status_venda
     }
 
     ITEM_VENDA {
@@ -127,7 +127,7 @@ erDiagram
         date data_emissao
         date data_vencimento
         date data_pagamento
-        status_conta_pagar_enum status_conta
+        enum status_conta_pagar
     }
 
     CONTA_RECEBER {
@@ -138,7 +138,7 @@ erDiagram
         date data_emissao
         date data_vencimento
         date data_recebimento
-        status_conta_receber_enum status_conta_receber
+        enum status_conta_receber
     }
 
     PEDIDO_PRODUCAO {
@@ -147,8 +147,8 @@ erDiagram
         date data_pedido
         date data_prevista
         date data_conclusao
-        etapa_producao_enum etapa_atual
-        status_producao_enum status_producao
+        enum etapa_producao
+        enum status_producao
     }
 
     ITEM_PEDIDO_PRODUCAO {
