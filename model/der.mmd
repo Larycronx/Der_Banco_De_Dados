@@ -127,7 +127,7 @@ erDiagram
         date data_emissao
         date data_vencimento
         date data_pagamento
-        varchar status
+        varchar status_conta
     }
 
     CONTA_RECEBER {
@@ -138,7 +138,7 @@ erDiagram
         date data_emissao
         date data_vencimento
         date data_recebimento
-        varchar status
+        varchar status_conta_receber
     }
 
     PEDIDO_PRODUCAO {
@@ -148,7 +148,7 @@ erDiagram
         date data_prevista
         date data_conclusao
         varchar etapa_atual
-        varchar status
+        varchar status_producao
     }
 
     ITEM_PEDIDO_PRODUCAO {
