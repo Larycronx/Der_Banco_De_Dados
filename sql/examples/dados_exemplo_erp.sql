@@ -5,7 +5,7 @@
 -- IDs na faixa 9000+; altere-os se já existirem no seu banco.
 -- Este arquivo não é idempotente: executá-lo novamente no mesmo banco causará conflito de PK.
 
-BEGIN;
+START TRANSACTION;
 
 -- 1. Tabelas-base sem dependências
 INSERT INTO fornecedor (id_fornecedor, razao_social, cnpj, telefone, email) VALUES
@@ -28,19 +28,19 @@ INSERT INTO canal_venda (id_canal, nome_canal) VALUES
     (9032, 'PRESENCIAL');
 
 INSERT INTO evento (id_evento, nome_evento, local_evento, data_inicio, data_fim) VALUES
-    (9041, 'Feira Exemplo Streetwear', 'Espaco Exemplo', DATE '2026-10-25', DATE '2026-10-25');
+    (9041, 'Feira Exemplo Streetwear', 'Espaco Exemplo', '2026-10-25', '2026-10-25');
 
 INSERT INTO promocao (id_promocao, nome, tipo_desconto, valor_desconto, data_inicio, data_fim, ativa) VALUES
-    (9051, 'Promocao Exemplo Novembro', 'PERCENTUAL', 10.00, DATE '2026-11-01', DATE '2026-11-30', TRUE);
+    (9051, 'Promocao Exemplo Novembro', 'PERCENTUAL', 10.00, '2026-11-01', '2026-11-30', TRUE);
 
 INSERT INTO perfil_acesso (id_perfil, nome, descricao) VALUES
     (9061, 'Perfil Administrador Exemplo', 'Perfil ficticio para demonstracao do relacionamento com usuario.');
 
 -- 2. Compras e itens de compra
 -- Os totais correspondem a quantidade x custo_unitario dos itens inseridos abaixo.
-INSERT INTO compra (id_compra, id_fornecedor, data_compra, valor_total, status) VALUES
-    (9071, 9001, DATE '2026-10-10', 675.00, 'RECEBIDA'),
-    (9072, 9002, DATE '2026-10-12', 260.00, 'RECEBIDA');
+INSERT INTO compra (id_compra, id_fornecedor, data_compra, valor_total, status_compra) VALUES
+    (9071, 9001, '2026-10-10', 675.00, 'RECEBIDA'),
+    (9072, 9002, '2026-10-12', 260.00, 'RECEBIDA');
 
 INSERT INTO item_compra (id_compra, id_produto, quantidade, custo_unitario) VALUES
     (9071, 9011, 10, 40.00),
@@ -50,22 +50,22 @@ INSERT INTO item_compra (id_compra, id_produto, quantidade, custo_unitario) VALU
 -- Um estoque por produto, respeitando UNIQUE (id_produto).
 -- Quantidades refletem compras menos vendas de exemplo registradas neste arquivo.
 INSERT INTO estoque (id_estoque, id_produto, quantidade_atual, estoque_minimo, data_atualizacao) VALUES
-    (9081, 9011, 8, 2, TIMESTAMP '2026-10-25 18:00:00'),
-    (9082, 9012, 4, 1, TIMESTAMP '2026-10-25 18:00:00'),
-    (9083, 9013, 7, 2, TIMESTAMP '2026-10-25 18:00:00');
+    (9081, 9011, 8, 2, '2026-10-25 18:00:00'),
+    (9082, 9012, 4, 1, '2026-10-25 18:00:00'),
+    (9083, 9013, 7, 2, '2026-10-25 18:00:00');
 
 INSERT INTO movimentacao_estoque (id_movimentacao, id_produto, tipo_movimentacao, quantidade, data_movimentacao, motivo) VALUES
-    (9091, 9011, 'ENTRADA', 10, TIMESTAMP '2026-10-10 10:00:00', 'Compra de exemplo 9071'),
-    (9092, 9012, 'ENTRADA', 5, TIMESTAMP '2026-10-10 10:05:00', 'Compra de exemplo 9071'),
-    (9093, 9013, 'ENTRADA', 8, TIMESTAMP '2026-10-12 11:00:00', 'Compra de exemplo 9072'),
-    (9094, 9011, 'SAIDA', 2, TIMESTAMP '2026-10-20 14:20:00', 'Venda de exemplo 9101'),
-    (9095, 9012, 'SAIDA', 1, TIMESTAMP '2026-10-20 14:20:00', 'Venda de exemplo 9101'),
-    (9096, 9013, 'SAIDA', 1, TIMESTAMP '2026-10-25 16:30:00', 'Venda de exemplo 9102');
+    (9091, 9011, 'ENTRADA', 10, '2026-10-10 10:00:00', 'Compra de exemplo 9071'),
+    (9092, 9012, 'ENTRADA', 5, '2026-10-10 10:05:00', 'Compra de exemplo 9071'),
+    (9093, 9013, 'ENTRADA', 8, '2026-10-12 11:00:00', 'Compra de exemplo 9072'),
+    (9094, 9011, 'SAIDA', 2, '2026-10-20 14:20:00', 'Venda de exemplo 9101'),
+    (9095, 9012, 'SAIDA', 1, '2026-10-20 14:20:00', 'Venda de exemplo 9101'),
+    (9096, 9013, 'SAIDA', 1, '2026-10-25 16:30:00', 'Venda de exemplo 9102');
 
 -- 3. Vendas, itens e dados do canal online
 INSERT INTO venda (id_venda, id_cliente, id_canal, id_evento, data_venda, valor_total, status_venda) VALUES
-    (9101, 9021, 9031, NULL, TIMESTAMP '2026-10-20 14:20:00', 379.70, 'FINALIZADA'),
-    (9102, 9022, 9032, 9041, TIMESTAMP '2026-10-25 16:30:00', 59.90, 'FINALIZADA');
+    (9101, 9021, 9031, NULL, '2026-10-20 14:20:00', 379.70, 'FINALIZADA'),
+    (9102, 9022, 9032, 9041, '2026-10-25 16:30:00', 59.90, 'FINALIZADA');
 
 INSERT INTO item_venda (id_venda, id_produto, quantidade, desconto) VALUES
     (9101, 9011, 2, 0.00),
@@ -73,30 +73,30 @@ INSERT INTO item_venda (id_venda, id_produto, quantidade, desconto) VALUES
     (9102, 9013, 1, 0.00);
 
 INSERT INTO venda_site (id_site, id_venda, data_compra, data_entrega) VALUES
-    (9111, 9101, DATE '2026-10-20', DATE '2026-10-23');
+    (9111, 9101, '2026-10-20', '2026-10-23');
 
 -- 4. Custos do evento e produtos associados à promoção
 INSERT INTO custo_evento (id_custo_evento, id_evento, descricao, valor, data_custo) VALUES
-    (9121, 9041, 'Aluguel de espaco — valor de exemplo', 300.00, DATE '2026-10-25'),
-    (9122, 9041, 'Material de divulgacao — valor de exemplo', 80.00, DATE '2026-10-25');
+    (9121, 9041, 'Aluguel de espaco — valor de exemplo', 300.00, '2026-10-25'),
+    (9122, 9041, 'Material de divulgacao — valor de exemplo', 80.00, '2026-10-25');
 
 INSERT INTO item_promocao (id_promocao, id_produto) VALUES
     (9051, 9011),
     (9051, 9013);
 
 -- 5. Contas a pagar e a receber
-INSERT INTO conta_pagar (id_conta_pagar, id_fornecedor, id_compra, descricao, valor, data_emissao, data_vencimento, data_pagamento, status_conta) VALUES
-    (9131, 9001, 9071, 'Pagamento referente a compra de exemplo 9071', 675.00, DATE '2026-10-10', DATE '2026-11-09', NULL, 'PENDENTE'),
-    (9132, 9002, 9072, 'Pagamento referente a compra de exemplo 9072', 260.00, DATE '2026-10-12', DATE '2026-11-11', NULL, 'PENDENTE');
+INSERT INTO conta_pagar (id_conta_pagar, id_fornecedor, id_compra, descricao, valor, data_emissao, data_vencimento, data_pagamento, status_conta_pagar) VALUES
+    (9131, 9001, 9071, 'Pagamento referente a compra de exemplo 9071', 675.00, '2026-10-10', '2026-11-09', NULL, 'PENDENTE'),
+    (9132, 9002, 9072, 'Pagamento referente a compra de exemplo 9072', 260.00, '2026-10-12', '2026-11-11', NULL, 'PENDENTE');
 
 INSERT INTO conta_receber (id_conta_receber, id_venda, descricao, valor, data_emissao, data_vencimento, data_recebimento, status_conta_receber) VALUES
-    (9141, 9101, 'Recebimento referente a venda de exemplo 9101', 379.70, DATE '2026-10-20', DATE '2026-10-20', DATE '2026-10-20', 'RECEBIDA'),
-    (9142, 9102, 'Recebimento referente a venda de exemplo 9102', 59.90, DATE '2026-10-25', DATE '2026-10-25', DATE '2026-10-25', 'RECEBIDA');
+    (9141, 9101, 'Recebimento referente a venda de exemplo 9101', 379.70, '2026-10-20', '2026-10-20', '2026-10-20', 'RECEBIDA'),
+    (9142, 9102, 'Recebimento referente a venda de exemplo 9102', 59.90, '2026-10-25', '2026-10-25', '2026-10-25', 'RECEBIDA');
 
 -- 6. Pedido de produção e itens
 -- O pedido está em andamento; por isso não foi lançada entrada de produção no estoque.
-INSERT INTO pedido_producao (id_pedido_producao, id_fornecedor, data_pedido, data_prevista, data_conclusao, etapa_atual, status_producao) VALUES
-    (9151, 9002, DATE '2026-10-26', DATE '2026-11-15', NULL, 'Corte e costura', 'EM_ANDAMENTO');
+INSERT INTO pedido_producao (id_pedido_producao, id_fornecedor, data_pedido, data_prevista, data_conclusao, etapa_producao, status_producao) VALUES
+    (9151, 9002, '2026-10-26', '2026-11-15', NULL, 'Corte e costura', 'EM_ANDAMENTO');
 
 INSERT INTO item_pedido_producao (id_pedido_producao, id_produto, quantidade) VALUES
     (9151, 9011, 20),

@@ -1,8 +1,8 @@
 # DER — Sistema de Gestão Comercial
 
-Modelo lógico de dados para apoiar a gestão comercial de uma empresa de moda automotiva e streetwear. O projeto reúne o diagrama Entidade-Relacionamento (DER), o DDL PostgreSQL, dados fictícios para teste e consultas de validação.
+Modelo lógico de dados para apoiar a gestão comercial de uma empresa de moda automotiva e streetwear. O projeto reúne o diagrama Entidade-Relacionamento (DER), o DDL MySQL, dados fictícios para teste e consultas de validação.
 
-[Diagrama renderizado](model/der.png) · [Fonte Mermaid](model/der.mmd) · [DDL PostgreSQL](sql/schema/der.sql) · [Guia de testes](sql/tests/README.md)
+[Diagrama renderizado](model/der.png) · [Fonte Mermaid](model/der.mmd) · [DDL MySQL](sql/schema/der.sql) · [Guia de testes](sql/tests/README.md)
 
 ## Organização do repositório
 
@@ -14,8 +14,8 @@ Modelo lógico de dados para apoiar a gestão comercial de uma empresa de moda a
 │   └── der.png                   # Diagrama renderizado
 └── sql/
     ├── schema/
-    │   ├── der.sql               # Criação das tabelas, ENUMs e restrições
-    │   └── migracao_enums.sql    # Conversão da versão anterior do esquema
+    │   ├── der.sql               # DDL MySQL: tabelas, ENUMs e restrições
+    │   └── migracao_enums.sql    # Migração de esquema MySQL anterior
     ├── examples/
     │   └── dados_exemplo_erp.sql # Registros fictícios para demonstração
     └── tests/
@@ -27,36 +27,43 @@ Modelo lógico de dados para apoiar a gestão comercial de uma empresa de moda a
 
 O diretório `model/` contém os artefatos do diagrama. A pasta `sql/schema/` contém a definição do banco; `sql/examples/` guarda os inserts fictícios; e `sql/tests/` reúne os testes, diagnósticos e instruções de execução.
 
-## Tipos ENUM
+## MySQL e tipos ENUM
 
-O DDL usa ENUMs para `produto.categoria`, `produto.tamanho`, `produto.cor`, `movimentacao_estoque.tipo_movimentacao`, `compra.status`, `venda.status_venda`, `conta_pagar.status_conta`, `conta_receber.status_conta_receber`, além de `pedido_producao.etapa_atual` e `pedido_producao.status_producao`. No DDL, os dois últimos tipos se chamam `etapa_producao_enum` e `status_producao_enum`.
+O esquema usa ENUM inline nas colunas `produto.categoria`, `produto.tamanho`, `produto.cor`, `movimentacao_estoque.tipo_movimentacao`, `compra.status_compra`, `venda.status_venda`, `conta_pagar.status_conta_pagar`, `conta_receber.status_conta_receber`, `pedido_producao.etapa_producao` e `pedido_producao.status_producao`. O MySQL declara os rótulos dentro da própria coluna ENUM; não há `CREATE TYPE` separado.
 
-Os rótulos refletem somente valores encontrados no seed: categoria (`Camiseta`, `Jaqueta`, `Acessorio`); tamanho (`M`, `G`, `Unico`); cor (`Preta`, `Azul`, `Preto`); movimentação (`ENTRADA`, `SAIDA`); compra (`RECEBIDA`); venda (`FINALIZADA`); conta a pagar (`PENDENTE`); conta a receber (`RECEBIDA`); etapa (`Corte e costura`); produção (`EM_ANDAMENTO`). Alguns ENUMs têm apenas um rótulo porque o seed atual só demonstra um estado; a lista ainda precisa de validação de negócio. Os rótulos são sensíveis a maiúsculas/minúsculas e acentos.
+As opções vêm dos valores encontrados no seed do repositório: categoria (`Camiseta`, `Jaqueta`, `Acessorio`); tamanho (`M`, `G`, `Unico`); cor (`Preta`, `Azul`, `Preto`); movimentação (`ENTRADA`, `SAIDA`); compra (`RECEBIDA`); venda (`FINALIZADA`); conta a pagar (`PENDENTE`); conta a receber (`RECEBIDA`); etapa (`Corte e costura`); produção (`EM_ANDAMENTO`). Alguns domínios têm apenas um rótulo porque os exemplos só mostram um estado. Valide com a equipe e amplie a lista antes de inserir outros valores. O executor ativa `STRICT_ALL_TABLES` para que valores inválidos em ENUM não sejam convertidos silenciosamente em string vazia. [Manual MySQL: ENUM](https://dev.mysql.com/doc/refman/8.4/en/enum.html)
 
-`fornecedor.razao_social` permanece `TEXT`: nomes de empresas são valores livres, não uma lista fechada de opções. O arquivo `sql/schema/migracao_enums.sql` converte uma base criada com a versão anterior do DDL; use-o apenas nessa base antiga. Em um banco novo, execute `sql/schema/der.sql` pelo runner. Não aplique a migração depois de criar o banco com o novo DDL.
+`fornecedor.razao_social` permanece `VARCHAR(255)`, pois é um nome livre e não um catálogo fechado. Valores monetários foram representados como `DECIMAL(12,2)`. As datas e horas do antigo modelo sem fuso horário usam `DATETIME` no MySQL.
 
-## Executar em PostgreSQL
+## Executar em MySQL
 
-Use um banco de teste vazio. O script de dados não é idempotente e os IDs de exemplo podem conflitar com registros já existentes. Com PostgreSQL e `psql` instalados, execute a partir da raiz do repositório:
-
-```bash
-DATABASE_URL='postgresql://postgres:SUA_SENHA@localhost:5432/erp_teste' ./sql/tests/run_tests.sh
-```
-
-O executor cria as tabelas, carrega os dados fictícios e executa as verificações de integridade. Para rodar as consultas de normalização depois desse ciclo:
+Use MySQL 8.0 ou superior e um banco de teste vazio. Configure suas credenciais no `mysql_config_editor` ou em `~/.my.cnf` com permissão restrita (`chmod 600 ~/.my.cnf`). Crie o banco:
 
 ```bash
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -P pager=off \
-  -f sql/tests/diagnostico_normalizacao.sql
+mysql -e "CREATE DATABASE erp_teste CHARACTER SET utf8mb4;"
 ```
 
-No pgAdmin, selecione um banco de teste vazio e execute, nesta ordem, `sql/schema/der.sql`, `sql/examples/dados_exemplo_erp.sql` e `sql/tests/test_integridade.sql`. O arquivo `sql/tests/diagnostico_normalizacao.sql` pode ser executado depois. Se um comando falhar dentro de uma transação, consulte primeiro a mensagem de erro original; `current transaction is aborted` costuma ser uma consequência. Use `ROLLBACK;` para encerrar a transação abortada antes de continuar.
+Na raiz do repositório, rode o ciclo de criação, seed e testes:
+
+```bash
+MYSQL_DATABASE=erp_teste ./sql/tests/run_tests.sh
+```
+
+O executor usa `mysql` e importa os scripts na mesma sessão. O script de exemplo não é idempotente e os IDs são fixos; não rode num banco que contenha dados a preservar. Se o DDL falhar no meio, remova e recrie o banco de teste antes de repetir. Para rodar somente as consultas diagnósticas depois:
+
+```bash
+mysql erp_teste < sql/tests/diagnostico_normalizacao.sql
+```
+
+No MySQL Workbench, crie e selecione um banco vazio, depois abra e execute, nesta ordem, `sql/schema/der.sql`, `sql/examples/dados_exemplo_erp.sql` e `sql/tests/test_integridade.sql`. Em Workbench, execute o arquivo completo para que o comando `DELIMITER` crie a rotina de teste corretamente. O diagnóstico pode ser executado depois.
+
+`sql/schema/migracao_enums.sql` serve somente para atualizar uma base **MySQL** criada com a versão anterior do esquema. Faça backup antes de usar. Ela não converte nem executa no PostgreSQL. Para dados que ainda estejam em PostgreSQL, faça uma exportação/importação separada para uma base MySQL criada com o DDL deste repositório.
 
 ## O que a suíte verifica
 
-Os testes automatizados conferem as 21 tabelas, 21 chaves primárias, 21 chaves estrangeiras, duas restrições `UNIQUE`, os 10 tipos ENUM e seus rótulos, as quantidades de registros fictícios e alguns totais e saldos demonstrativos. Em 03/11/2026, a suíte atual passou em PostgreSQL 16.15 tanto numa base nova quanto numa base criada com o DDL anterior e convertida pela migração. O resultado e os limites das consultas estão descritos em [`sql/tests/README.md`](sql/tests/README.md).
+A rotina de teste confere as 21 tabelas, 21 PKs, 21 FKs, duas restrições `UNIQUE`, os dez campos ENUM e seus rótulos, a contagem de registros fictícios e cálculos de compras, vendas e estoque. As FKs são aplicadas pelas tabelas InnoDB. [Manual MySQL: chaves estrangeiras](https://dev.mysql.com/doc/refman/8.4/en/create-table-foreign-keys.html)
 
-Esses testes verificam a estrutura e a consistência dos exemplos usados. Eles não certificam automaticamente 1FN, 2FN ou 3FN para todos os dados e regras do ERP. As consultas diagnósticas ajudam a investigar possíveis dependências; seus resultados precisam ser interpretados junto às regras de negócio.
+Os testes verificam o esquema e os dados fictícios. Eles não certificam automaticamente 1FN, 2FN ou 3FN do sistema real. As consultas diagnósticas ajudam a investigar dependências e precisam ser interpretadas à luz das regras de negócio. Em 04/11/2026, o ciclo completo passou em MySQL 8.0.46 numa base nova; a migração de uma base MySQL legada de teste e as consultas diagnósticas também foram executadas sem erro. O modo estrito rejeitou um rótulo ENUM inválido no teste.
 
 ## Escopo do modelo
 
@@ -92,4 +99,4 @@ As participações mínimas — por exemplo, uma compra ter ao menos um item —
 
 ## Evidências
 
-O repositório contém os scripts necessários para reproduzir os testes. Uma captura antiga do pgAdmin não está incluída na árvore atual; use o executor e os resultados documentados na pasta `sql/tests/` para repetir as verificações num banco de teste.
+O repositório contém os scripts necessários para reproduzir os testes no MySQL. Rode-os em uma base descartável e preserve suas cópias de segurança antes de aplicar mudanças em outra instância.

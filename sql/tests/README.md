@@ -1,44 +1,52 @@
-# Testes SQL
+# Testes SQL para MySQL
 
-Esta pasta reúne o executor do ciclo de teste, as asserções automatizadas e consultas diagnósticas de normalização. Os caminhos neste guia são relativos à raiz do repositório.
+Esta pasta reúne o executor do ciclo de teste, as asserções automatizadas e consultas diagnósticas. Os caminhos são relativos à raiz do repositório.
 
-- `run_tests.sh` executa, em ordem, o DDL, os dados fictícios e as asserções. Use somente em um **banco de teste vazio**: o DDL não recria tabelas existentes e o script de exemplos não é idempotente.
-- `test_integridade.sql` verifica 21 tabelas, 21 PKs, 21 FKs, duas restrições `UNIQUE`, 10 tipos ENUM e rótulos esperados, as quantidades dos exemplos, referências e cálculos selecionados.
-- `diagnostico_normalizacao.sql` contém consultas de apoio para investigar 1FN, 2FN e 3FN. Elas não certificam formas normais automaticamente.
-- `sql/schema/migracao_enums.sql` converte uma base existente que tenha sido criada com o DDL anterior aos ENUMs. Não execute essa migração numa base nova criada com o DDL atual.
+- `run_tests.sh` executa o DDL MySQL, os dados fictícios e os testes numa única sessão do cliente `mysql`. Use somente em um banco de teste vazio.
+- `test_integridade.sql` verifica 21 tabelas, 21 chaves primárias, 21 chaves estrangeiras, duas restrições `UNIQUE`, 10 colunas ENUM e seus rótulos, contagens dos dados fictícios e totais demonstrativos.
+- `diagnostico_normalizacao.sql` reúne consultas MySQL de apoio para investigar 1FN, 2FN e 3FN; não certifica formas normais.
+- `sql/schema/migracao_enums.sql` atualiza uma versão anterior do esquema que já esteja em MySQL. Ela não serve para executar nem converter uma base PostgreSQL.
 
-## Executar o ciclo completo em uma base nova
+## Executar o ciclo numa base nova
 
-É necessário ter PostgreSQL e o cliente `psql`. Crie um banco de teste vazio, por exemplo `erp_teste`, e, na raiz do repositório, rode:
+É necessário ter MySQL 8.0 ou superior e o cliente `mysql`. Configure as credenciais por `mysql_config_editor` ou em `~/.my.cnf` com permissões restritas. Crie uma base de teste vazia:
 
 ```bash
-DATABASE_URL='postgresql://postgres:SUA_SENHA@localhost:5432/erp_teste' ./sql/tests/run_tests.sh
+mysql -e "CREATE DATABASE erp_teste CHARACTER SET utf8mb4;"
 ```
 
-O executor cria as tabelas, insere os exemplos e roda as asserções. Se uma verificação falhar, o `psql` para no primeiro erro. Para repetir o ciclo do zero, use outro banco vazio ou apague e recrie o banco de teste. Não use um banco com dados que queira preservar.
+Na raiz do repositório, execute:
 
-## Converter uma base existente
+```bash
+MYSQL_DATABASE=erp_teste ./sql/tests/run_tests.sh
+```
 
-Se a base já contém as tabelas da versão anterior do DDL, faça primeiro um backup e confira se os valores existentes correspondem aos rótulos do tipo ENUM. Execute `sql/schema/migracao_enums.sql` uma única vez nessa base. A conversão está dentro de uma transação: se algum valor não corresponder exatamente a um rótulo, o PostgreSQL interrompe a migração e a transação deve ser revertida com `ROLLBACK;`. Não rode o seed de exemplo como parte da migração.
+O executor ativa `STRICT_ALL_TABLES`, para que a tentativa de gravar um valor não declarado em ENUM gere erro em vez de produzir a string vazia de erro do MySQL. A carga de exemplos usa IDs fixos e não é idempotente. Não rode num banco com dados que queira preservar.
 
-A migração usa os rótulos vistos no seed atual. Eles são sensíveis a maiúsculas/minúsculas e acentos. Novos valores de categorias, tamanhos, cores, tipos de movimentação, estados e etapas precisam ser confirmados com as regras do negócio e incluídos no tipo ENUM antes de serem usados.
+O DDL contém operações `CREATE TABLE`; se a execução parar no meio, o MySQL pode já ter criado parte das tabelas. Para repetir do zero, apague e recrie somente a base de teste descartável. Não aplique essa ação numa base de trabalho.
 
-Para uma base existente, depois de confirmar um novo rótulo, o PostgreSQL permite acrescentá-lo, por exemplo: `ALTER TYPE cor_produto_enum ADD VALUE 'Verde';`. Atualize também o `CREATE TYPE` correspondente em `sql/schema/der.sql`, o script de migração se ele ainda for necessário para outra base antiga, os testes e o Mermaid. Rode os testes numa base isolada depois da mudança.
+## Executar pelo MySQL Workbench
 
-`fornecedor.razao_social` permanece `TEXT`: nomes legais de empresas são dados livres, não opções fixas de um catálogo. A coluna `compra.status` mantém seu nome. As colunas de contas e produção usam os nomes explícitos `status_conta`, `status_conta_receber` e `status_producao`, alinhados ao DER; cada uma usa seu tipo ENUM específico.
+Crie e selecione uma base vazia. Execute por inteiro, nesta ordem, `sql/schema/der.sql`, `sql/examples/dados_exemplo_erp.sql` e `sql/tests/test_integridade.sql`. O arquivo de teste cria e chama uma procedure; rode-o como script completo para que o cliente reconheça os comandos `DELIMITER`. Depois, se desejar, execute `sql/tests/diagnostico_normalizacao.sql`.
 
-## Executar pelo pgAdmin
+## Atualizar uma base existente
 
-Para uma base nova e vazia, abra o Query Tool e execute, nessa ordem, `sql/schema/der.sql`, `sql/examples/dados_exemplo_erp.sql` e `sql/tests/test_integridade.sql`. Em seguida, se desejar, execute `sql/tests/diagnostico_normalizacao.sql`.
+Faça backup e confirme a origem da base antes de qualquer alteração. `sql/schema/migracao_enums.sql` contém instruções `ALTER TABLE` para uma base MySQL que tenha sido criada com a versão anterior desse esquema. Ela é uma migração de MySQL para MySQL, não um conversor entre mecanismos. Para dados que ainda estejam no PostgreSQL, exporte-os e importe-os separadamente numa base MySQL criada com o DDL atual. Confira tipos, datas, ENUMs e chaves estrangeiras após a importação.
 
-Se houver erro, procure a primeira mensagem de falha. Mensagens `current transaction is aborted` que aparecem depois normalmente são consequência do erro original. Execute `ROLLBACK;` antes de tentar novamente. Não reexecute o seed sobre os mesmos registros: ele usa IDs fixos de demonstração.
+O MySQL declara os valores de ENUM inline na coluna. Os rótulos atualmente presentes nos exemplos foram mantidos; alguns estados têm uma única opção porque só aparecem dessa forma no seed. Confirme todos os estados e etapas válidos com o negócio antes de ampliar ou usar os tipos em dados reais.
 
 ## Interpretar os diagnósticos
 
-Algumas consultas podem retornar linhas candidatas a análise; outras podem retornar zero linhas. Uma amostra sem duplicidades ou divergências não prova uma regra para todos os dados ou processos. Confirme as dependências funcionais e regras reais com o grupo — por exemplo, o significado de `preco_unitario`, a regra de `COMPRA.valor_total`, se `cnpj` precisa ser único e como são garantidas as participações mínimas entre entidades.
+Resultados vazios ou sem duplicidades não provam uma dependência funcional. Uma amostra pequena pode não revelar variações. Confirme as regras reais com a equipe, como o significado de `preco_unitario`, o cálculo de `COMPRA.valor_total`, a unicidade de `cnpj` e as participações mínimas das entidades.
 
-O seed contém somente registros fictícios. As verificações testam o DDL e esses registros; não testam dados reais nem certificam 1FN, 2FN ou 3FN do ERP completo.
+O seed contém somente registros fictícios. Os testes verificam o DDL e esses exemplos, não dados reais nem a normalização completa do ERP.
 
-## Resultado registrado
+## Documentação MySQL
 
-Em 02/11/2026, a versão anterior foi executada em PostgreSQL 16.15 num banco isolado. Em 03/11/2026, a versão atual foi testada em PostgreSQL 16.15 por dois caminhos: criação completa em banco novo pelo runner e conversão de uma base com o DDL anterior, seed e asserções atualizadas. Nos dois caminhos, passaram as contagens de tabelas/chaves, os 10 ENUMs e rótulos esperados, as referências, as quantidades de exemplos e os cálculos de compra, venda e estoque. As consultas de diagnóstico também rodaram sem erro nas duas bases; elas são exploratórias e não certificam formas normais.
+- [Tipo ENUM](https://dev.mysql.com/doc/refman/8.4/en/enum.html)
+- [Chaves estrangeiras](https://dev.mysql.com/doc/refman/8.4/en/create-table-foreign-keys.html)
+- [Tipos de dados](https://dev.mysql.com/doc/refman/8.4/en/data-types.html)
+
+## Resultado desta versão
+
+Em 04/11/2026, o ciclo completo passou em MySQL 8.0.46 numa base de teste nova. A migração foi executada com sucesso numa base MySQL legada isolada, preservando os valores e aplicando as 10 colunas ENUM. O arquivo de diagnóstico também foi executado sem erro, e um rótulo ENUM inválido foi rejeitado sob modo estrito. Os resultados abrangem apenas esse esquema e os registros fictícios do projeto.

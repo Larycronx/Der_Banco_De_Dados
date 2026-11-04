@@ -24,8 +24,8 @@ erDiagram
     PRODUTO {
         int id_produto PK
         varchar nome
-        categoria_produto_enum categoria
-        tamanho_produto_enum tamanho
+        enum categoria
+        enum tamanho
         enum cor
         decimal preco_venda
         boolean ativo
