@@ -1,8 +1,20 @@
 # DER — Sistema de Gestão Comercial
 
-Modelo lógico de dados para apoiar a gestão comercial de uma empresa de moda automotiva e streetwear. Este repositório mantém o diagrama Entidade-Relacionamento (DER) e uma descrição resumida do modelo.
+Este repositório documenta o modelo de dados de uma empresa de moda automotiva e streetwear por meio do modelo conceitual, do modelo lógico e de uma descrição resumida do escopo.
 
-[Diagrama renderizado](model/der.png) · [Fonte Mermaid](model/der.mmd)
+## Modelos de dados
+
+### Modelo conceitual — notação Chen
+
+![Modelo conceitual do sistema de gestão comercial, em notação Chen](model/der_conceitual_chen.svg)
+
+[Ver ou baixar o arquivo SVG do modelo conceitual](model/der_conceitual_chen.svg).
+
+### Modelo lógico
+
+![Diagrama lógico do sistema de gestão comercial](model/der.png)
+
+O diagrama lógico também está disponível em [formato PNG](model/der.png), e seu código-fonte editável em [Mermaid](model/der.mmd).
 
 ## Situação dos arquivos SQL
 
@@ -14,13 +26,14 @@ Os arquivos SQL e os materiais auxiliares de execução e teste foram removidos 
 .
 ├── README.md
 └── model/
-    ├── der.mmd  # Fonte Mermaid do DER
-    └── der.png   # Diagrama renderizado
+    ├── der_conceitual_chen.svg  # Modelo conceitual, notação Chen
+    ├── der.mmd                  # Fonte Mermaid do modelo lógico
+    └── der.png                  # Renderização do modelo lógico
 ```
 
 ## Escopo do modelo
 
-O DER contém 21 entidades:
+O modelo lógico contém 21 entidades:
 
 | Entidade | Finalidade representada |
 | --- | --- |
@@ -46,6 +59,6 @@ O DER contém 21 entidades:
 | `PERFIL_ACESSO` | Perfis de acesso. |
 | `USUARIO` | Usuários e seus perfis de acesso. |
 
-O modelo representa compras e vendas por tabelas de itens, associa produtos a promoções, relaciona custos a eventos e permite parcelas a pagar e a receber. `VENDA_SITE` é modelada como extensão opcional de `VENDA`; essa cardinalidade ainda deve ser confirmada com as regras reais da empresa.
+O modelo lógico representa compras e vendas por tabelas de itens, associa produtos a promoções, relaciona custos a eventos e permite parcelas a pagar e a receber. `VENDA_SITE` é modelada como extensão opcional de `VENDA`; essa cardinalidade ainda deve ser confirmada com as regras reais da empresa.
 
 As participações mínimas — por exemplo, uma compra ter ao menos um item — são representadas no diagrama, mas precisam ser validadas de acordo com as regras reais da empresa.
