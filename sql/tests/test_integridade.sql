@@ -158,8 +158,8 @@ BEGIN
           JOIN (
                 SELECT id_produto,
                        SUM(CASE
-                               WHEN upper(tipo_movimentacao) = 'ENTRADA' THEN quantidade
-                               WHEN upper(tipo_movimentacao) = 'SAIDA' THEN -quantidade
+                               WHEN tipo_movimentacao = 'ENTRADA' THEN quantidade
+                               WHEN tipo_movimentacao = 'SAIDA' THEN -quantidade
                                ELSE 0
                            END) AS saldo_calculado
                   FROM movimentacao_estoque
@@ -173,6 +173,67 @@ BEGIN
     END IF;
 
     RAISE NOTICE 'PASSOU: saldos de estoque dos exemplos correspondem às movimentações.';
+END;
+$$;
+
+DO $$
+DECLARE
+    item RECORD;
+    actual_labels TEXT[];
+BEGIN
+    FOR item IN
+        SELECT * FROM (VALUES
+            ('produto', 'categoria', 'categoria_produto_enum', ARRAY['Camiseta', 'Jaqueta', 'Acessorio']::TEXT[]),
+            ('produto', 'tamanho', 'tamanho_produto_enum', ARRAY['M', 'G', 'Unico']::TEXT[]),
+            ('produto', 'cor', 'cor_produto_enum', ARRAY['Preta', 'Azul', 'Preto']::TEXT[]),
+            ('movimentacao_estoque', 'tipo_movimentacao', 'tipo_movimentacao_enum', ARRAY['ENTRADA', 'SAIDA']::TEXT[]),
+            ('compra', 'status', 'status_compra_enum', ARRAY['RECEBIDA']::TEXT[]),
+            ('venda', 'status_venda', 'status_venda_enum', ARRAY['FINALIZADA']::TEXT[]),
+            ('conta_pagar', 'status_conta', 'status_conta_pagar_enum', ARRAY['PENDENTE']::TEXT[]),
+            ('conta_receber', 'status_conta_receber', 'status_conta_receber_enum', ARRAY['RECEBIDA']::TEXT[]),
+            ('pedido_producao', 'etapa_atual', 'etapa_producao_enum', ARRAY['Corte e costura']::TEXT[]),
+            ('pedido_producao', 'status_producao', 'status_producao_enum', ARRAY['EM_ANDAMENTO']::TEXT[])
+        ) AS expected(table_name, column_name, type_name, enum_labels)
+    LOOP
+        IF NOT EXISTS (
+            SELECT 1
+              FROM information_schema.columns
+             WHERE table_schema = 'public'
+               AND table_name = item.table_name
+               AND column_name = item.column_name
+               AND data_type = 'USER-DEFINED'
+               AND udt_name = item.type_name
+        ) THEN
+            RAISE EXCEPTION 'A coluna %.% não usa o ENUM %',
+                item.table_name, item.column_name, item.type_name;
+        END IF;
+
+        SELECT array_agg(e.enumlabel ORDER BY e.enumsortorder)
+          INTO actual_labels
+          FROM pg_type t
+          JOIN pg_enum e ON e.enumtypid = t.oid
+          JOIN pg_namespace n ON n.oid = t.typnamespace
+         WHERE n.nspname = 'public'
+           AND t.typname = item.type_name;
+
+        IF actual_labels IS DISTINCT FROM item.enum_labels THEN
+            RAISE EXCEPTION 'Rótulos inesperados no ENUM %: esperado %, encontrado %',
+                item.type_name, item.enum_labels, actual_labels;
+        END IF;
+    END LOOP;
+
+    IF NOT EXISTS (
+        SELECT 1
+          FROM information_schema.columns
+         WHERE table_schema = 'public'
+           AND table_name = 'fornecedor'
+           AND column_name = 'razao_social'
+           AND data_type = 'text'
+    ) THEN
+        RAISE EXCEPTION 'fornecedor.razao_social deve permanecer TEXT, não ENUM.';
+    END IF;
+
+    RAISE NOTICE 'PASSOU: os 10 tipos ENUM, suas colunas e seus rótulos correspondem ao modelo; razao_social permanece TEXT.';
 END;
 $$;
 

@@ -1,6 +1,17 @@
 
 BEGIN;
 
+CREATE TYPE categoria_produto_enum AS ENUM ('Camiseta', 'Jaqueta', 'Acessorio');
+CREATE TYPE tamanho_produto_enum AS ENUM ('M', 'G', 'Unico');
+CREATE TYPE cor_produto_enum AS ENUM ('Preta', 'Azul', 'Preto');
+CREATE TYPE tipo_movimentacao_enum AS ENUM ('ENTRADA', 'SAIDA');
+CREATE TYPE status_compra_enum AS ENUM ('RECEBIDA');
+CREATE TYPE status_venda_enum AS ENUM ('FINALIZADA');
+CREATE TYPE status_conta_pagar_enum AS ENUM ('PENDENTE');
+CREATE TYPE status_conta_receber_enum AS ENUM ('RECEBIDA');
+CREATE TYPE etapa_producao_enum AS ENUM ('Corte e costura');
+CREATE TYPE status_producao_enum AS ENUM ('EM_ANDAMENTO');
+
 CREATE TABLE fornecedor (
     id_fornecedor INTEGER PRIMARY KEY,
     razao_social  TEXT,
@@ -12,9 +23,9 @@ CREATE TABLE fornecedor (
 CREATE TABLE produto (
     id_produto     INTEGER PRIMARY KEY,
     nome           TEXT,
-    categoria      TEXT,
-    tamanho        TEXT,
-    cor            TEXT,
+    categoria      categoria_produto_enum,
+    tamanho        tamanho_produto_enum,
+    cor            cor_produto_enum,
     preco_venda    NUMERIC,
     ativo          BOOLEAN,
     preco_unitario NUMERIC,
@@ -63,7 +74,7 @@ CREATE TABLE compra (
     id_fornecedor INTEGER NOT NULL,
     data_compra  DATE,
     valor_total  NUMERIC,
-    status       TEXT,
+    status       status_compra_enum,
     CONSTRAINT fk_compra_fornecedor
         FOREIGN KEY (id_fornecedor) REFERENCES fornecedor (id_fornecedor)
 );
@@ -94,7 +105,7 @@ CREATE TABLE estoque (
 CREATE TABLE movimentacao_estoque (
     id_movimentacao  INTEGER PRIMARY KEY,
     id_produto       INTEGER NOT NULL,
-    tipo_movimentacao TEXT,
+    tipo_movimentacao tipo_movimentacao_enum,
     quantidade       INTEGER,
     data_movimentacao TIMESTAMP,
     motivo           TEXT,
@@ -109,7 +120,7 @@ CREATE TABLE venda (
     id_evento   INTEGER,
     data_venda  TIMESTAMP,
     valor_total NUMERIC,
-    status_venda TEXT,
+    status_venda status_venda_enum,
     CONSTRAINT fk_venda_cliente
         FOREIGN KEY (id_cliente) REFERENCES cliente (id_cliente),
     CONSTRAINT fk_venda_canal
@@ -169,7 +180,7 @@ CREATE TABLE conta_pagar (
     data_emissao   DATE,
     data_vencimento DATE,
     data_pagamento DATE,
-    status         TEXT,
+    status_conta   status_conta_pagar_enum,
     CONSTRAINT fk_conta_pagar_fornecedor
         FOREIGN KEY (id_fornecedor) REFERENCES fornecedor (id_fornecedor),
     CONSTRAINT fk_conta_pagar_compra
@@ -184,7 +195,7 @@ CREATE TABLE conta_receber (
     data_emissao     DATE,
     data_vencimento  DATE,
     data_recebimento DATE,
-    status           TEXT,
+    status_conta_receber status_conta_receber_enum,
     CONSTRAINT fk_conta_receber_venda
         FOREIGN KEY (id_venda) REFERENCES venda (id_venda)
 );
@@ -195,8 +206,8 @@ CREATE TABLE pedido_producao (
     data_pedido        DATE,
     data_prevista      DATE,
     data_conclusao     DATE,
-    etapa_atual        TEXT,
-    status             TEXT,
+    etapa_atual        etapa_producao_enum,
+    status_producao    status_producao_enum,
     CONSTRAINT fk_pedido_producao_fornecedor
         FOREIGN KEY (id_fornecedor) REFERENCES fornecedor (id_fornecedor)
 );

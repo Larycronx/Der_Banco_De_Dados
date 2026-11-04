@@ -85,17 +85,17 @@ INSERT INTO item_promocao (id_promocao, id_produto) VALUES
     (9051, 9013);
 
 -- 5. Contas a pagar e a receber
-INSERT INTO conta_pagar (id_conta_pagar, id_fornecedor, id_compra, descricao, valor, data_emissao, data_vencimento, data_pagamento, status) VALUES
+INSERT INTO conta_pagar (id_conta_pagar, id_fornecedor, id_compra, descricao, valor, data_emissao, data_vencimento, data_pagamento, status_conta) VALUES
     (9131, 9001, 9071, 'Pagamento referente a compra de exemplo 9071', 675.00, DATE '2026-10-10', DATE '2026-11-09', NULL, 'PENDENTE'),
     (9132, 9002, 9072, 'Pagamento referente a compra de exemplo 9072', 260.00, DATE '2026-10-12', DATE '2026-11-11', NULL, 'PENDENTE');
 
-INSERT INTO conta_receber (id_conta_receber, id_venda, descricao, valor, data_emissao, data_vencimento, data_recebimento, status) VALUES
+INSERT INTO conta_receber (id_conta_receber, id_venda, descricao, valor, data_emissao, data_vencimento, data_recebimento, status_conta_receber) VALUES
     (9141, 9101, 'Recebimento referente a venda de exemplo 9101', 379.70, DATE '2026-10-20', DATE '2026-10-20', DATE '2026-10-20', 'RECEBIDA'),
     (9142, 9102, 'Recebimento referente a venda de exemplo 9102', 59.90, DATE '2026-10-25', DATE '2026-10-25', DATE '2026-10-25', 'RECEBIDA');
 
 -- 6. Pedido de produção e itens
 -- O pedido está em andamento; por isso não foi lançada entrada de produção no estoque.
-INSERT INTO pedido_producao (id_pedido_producao, id_fornecedor, data_pedido, data_prevista, data_conclusao, etapa_atual, status) VALUES
+INSERT INTO pedido_producao (id_pedido_producao, id_fornecedor, data_pedido, data_prevista, data_conclusao, etapa_atual, status_producao) VALUES
     (9151, 9002, DATE '2026-10-26', DATE '2026-11-15', NULL, 'Corte e costura', 'EM_ANDAMENTO');
 
 INSERT INTO item_pedido_producao (id_pedido_producao, id_produto, quantidade) VALUES

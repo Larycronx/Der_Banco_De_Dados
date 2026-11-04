@@ -14,7 +14,8 @@ Modelo lógico de dados para apoiar a gestão comercial de uma empresa de moda a
 │   └── der.png                   # Diagrama renderizado
 └── sql/
     ├── schema/
-    │   └── der.sql               # Criação das tabelas e restrições
+    │   ├── der.sql               # Criação das tabelas, ENUMs e restrições
+    │   └── migracao_enums.sql    # Conversão da versão anterior do esquema
     ├── examples/
     │   └── dados_exemplo_erp.sql # Registros fictícios para demonstração
     └── tests/
@@ -25,6 +26,14 @@ Modelo lógico de dados para apoiar a gestão comercial de uma empresa de moda a
 ```
 
 O diretório `model/` contém os artefatos do diagrama. A pasta `sql/schema/` contém a definição do banco; `sql/examples/` guarda os inserts fictícios; e `sql/tests/` reúne os testes, diagnósticos e instruções de execução.
+
+## Tipos ENUM
+
+O DDL usa ENUMs para `produto.categoria`, `produto.tamanho`, `produto.cor`, `movimentacao_estoque.tipo_movimentacao`, `compra.status`, `venda.status_venda`, `conta_pagar.status_conta`, `conta_receber.status_conta_receber`, além de `pedido_producao.etapa_atual` e `pedido_producao.status_producao`. No DDL, os dois últimos tipos se chamam `etapa_producao_enum` e `status_producao_enum`.
+
+Os rótulos refletem somente valores encontrados no seed: categoria (`Camiseta`, `Jaqueta`, `Acessorio`); tamanho (`M`, `G`, `Unico`); cor (`Preta`, `Azul`, `Preto`); movimentação (`ENTRADA`, `SAIDA`); compra (`RECEBIDA`); venda (`FINALIZADA`); conta a pagar (`PENDENTE`); conta a receber (`RECEBIDA`); etapa (`Corte e costura`); produção (`EM_ANDAMENTO`). Alguns ENUMs têm apenas um rótulo porque o seed atual só demonstra um estado; a lista ainda precisa de validação de negócio. Os rótulos são sensíveis a maiúsculas/minúsculas e acentos.
+
+`fornecedor.razao_social` permanece `TEXT`: nomes de empresas são valores livres, não uma lista fechada de opções. O arquivo `sql/schema/migracao_enums.sql` converte uma base criada com a versão anterior do DDL; use-o apenas nessa base antiga. Em um banco novo, execute `sql/schema/der.sql` pelo runner. Não aplique a migração depois de criar o banco com o novo DDL.
 
 ## Executar em PostgreSQL
 
@@ -45,7 +54,7 @@ No pgAdmin, selecione um banco de teste vazio e execute, nesta ordem, `sql/schem
 
 ## O que a suíte verifica
 
-Os testes automatizados conferem as 21 tabelas, 21 chaves primárias, 21 chaves estrangeiras, duas restrições `UNIQUE`, as quantidades de registros fictícios e alguns totais e saldos demonstrativos. A suíte passou em PostgreSQL 16.15 num banco de teste isolado em 02/11/2026. O resultado e os limites das consultas estão descritos em [`sql/tests/README.md`](sql/tests/README.md).
+Os testes automatizados conferem as 21 tabelas, 21 chaves primárias, 21 chaves estrangeiras, duas restrições `UNIQUE`, os 10 tipos ENUM e seus rótulos, as quantidades de registros fictícios e alguns totais e saldos demonstrativos. Em 03/11/2026, a suíte atual passou em PostgreSQL 16.15 tanto numa base nova quanto numa base criada com o DDL anterior e convertida pela migração. O resultado e os limites das consultas estão descritos em [`sql/tests/README.md`](sql/tests/README.md).
 
 Esses testes verificam a estrutura e a consistência dos exemplos usados. Eles não certificam automaticamente 1FN, 2FN ou 3FN para todos os dados e regras do ERP. As consultas diagnósticas ajudam a investigar possíveis dependências; seus resultados precisam ser interpretados junto às regras de negócio.
 
