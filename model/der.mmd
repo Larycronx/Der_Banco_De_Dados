@@ -20,6 +20,7 @@ erDiagram
     PEDIDO_PRODUCAO ||--|{ ITEM_PEDIDO_PRODUCAO : "contém"
     PRODUTO ||--o{ ITEM_PEDIDO_PRODUCAO : "é produzido"
     PERFIL_ACESSO ||--o{ USUARIO : "define acesso"
+     CLIENTE ||--o{ TELEFONE : "possui numero"
 
     PRODUTO {
         int id_produto PK
@@ -193,4 +194,15 @@ erDiagram
         varchar email
         varchar senha_hash
         boolean ativo
+    }
+
+    TELEFONE {
+        int id_telefone PK
+        int id_cliente FK
+        enum pais_iso
+        enum ddi
+        enum ddd
+        varchar numero_local
+        enum tipo
+        boolean principal
     }
