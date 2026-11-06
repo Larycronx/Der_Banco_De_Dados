@@ -12,9 +12,9 @@ Este repositório documenta o modelo de dados de uma empresa de moda automotiva 
 
 ### Modelo lógico
 
-![Diagrama lógico do sistema de gestão comercial](model/der.png)
+![Diagrama lógico do sistema de gestão comercial](model/DER.svg)
 
-O diagrama lógico também está disponível em [formato PNG](model/der.png), e seu código-fonte editável em [Mermaid](model/der.mmd).
+O diagrama lógico também está disponível em [formato PNG](model/DER.svg), e seu código-fonte editável em [Mermaid](model/der.mmd).
 
 ## Situação dos arquivos SQL
 
