@@ -223,8 +223,6 @@ CREATE TABLE usuario (
         FOREIGN KEY (id_perfil) REFERENCES perfil_acesso (id_perfil)
 );
 
-USE difeecult;
-
 CREATE TABLE telefone (
     id_telefone INT PRIMARY KEY,
     id_cliente INT NOT NULL,
